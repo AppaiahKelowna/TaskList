@@ -1,6 +1,6 @@
 import { Button, Text, TextInput, View } from 'react-native';
 
-export default function Register({ navigation }) {
+const Register = ({ navigation }) => {
   return (
     <View>
       <TextInput
@@ -18,4 +18,6 @@ export default function Register({ navigation }) {
       ></Button>
     </View>
   );
-}
+};
+
+export default Register;

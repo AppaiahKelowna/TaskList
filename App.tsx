@@ -1,11 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import { NewAppScreen } from '@react-native/new-app-screen';
 import {
   StatusBar,
   StyleSheet,
@@ -18,20 +10,36 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from './src/screen/Home';
 import Login from './src/screen/Login';
 import Signup from './src/screen/Register';
+import { AuthProvider, useAuth } from './src/context/AuthProvider';
 
-const stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator();
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+const AppNavigator = () => {
+  const { user, authLoading } = useAuth();
+
+  if (authLoading) return null;
 
   return (
     <NavigationContainer>
-      <stack.Navigator>
-        <stack.Screen name="Signup" component={Signup} />
-        <stack.Screen name="Home" component={Home} />
-        <stack.Screen name="Login" component={Login} />
-      </stack.Navigator>
+      {user ? (
+        <Stack.Navigator>
+          <Stack.Screen name="Home" component={Home} />
+        </Stack.Navigator>
+      ) : (
+        <Stack.Navigator>
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="Register" component={Login} />
+        </Stack.Navigator>
+      )}
     </NavigationContainer>
+  );
+};
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppNavigator />
+    </AuthProvider>
   );
 }
 
