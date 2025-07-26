@@ -11,6 +11,8 @@ import Home from './src/screen/Home';
 import Login from './src/screen/Login';
 import Signup from './src/screen/Register';
 import { AuthProvider, useAuth } from './src/context/AuthProvider';
+import { useEffect } from 'react';
+import BootSplash from 'react-native-bootsplash';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +20,13 @@ const AppNavigator = () => {
   const { user, authLoading } = useAuth();
 
   if (authLoading) return null;
+
+  useEffect(() => {
+    if (!authLoading) {
+      const hideBootSplash = async () => await BootSplash.hide({ fade: true });
+      hideBootSplash();
+    }
+  }, [authLoading]);
 
   return (
     <NavigationContainer>
