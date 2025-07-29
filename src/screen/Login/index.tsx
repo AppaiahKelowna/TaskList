@@ -16,6 +16,8 @@ export default function Login({ navigation }) {
   const handleLogin = async () => {
     if (userName && password) {
       try {
+        console.log('userName', { userName });
+        console.log('password', { password });
         await login(userName, password);
         navigation.navigate('Home');
       } catch (error) {

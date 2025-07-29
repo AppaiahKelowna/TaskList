@@ -6,11 +6,12 @@ const Register = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rePassword, setRePassword] = useState('');
+  const { signup } = useAuth();
   const handleRegister = () => {
     if (email && password && rePassword) {
       if (password == rePassword) {
         try {
-          signUp(email, password);
+          signup(email, password);
           navigation.navigate('Login');
         } catch (error) {
           console.log(error);
@@ -18,7 +19,7 @@ const Register = ({ navigation }) => {
       }
     }
   };
-  const { signUp } = useAuth();
+
   return (
     <View className="flex-1 justify-center items-center gap-5">
       <Text className="text-2xl font-semibold w-80">Create Your Account</Text>
