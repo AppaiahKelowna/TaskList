@@ -1,21 +1,32 @@
 import { useState } from 'react';
 import { Button, Text, TextInput, View, TouchableOpacity } from 'react-native';
 import { useAuth } from '../../context/AuthProvider';
+import Loginform from '../../../utils/loginType';
+import registerForm from '../../../utils/registerType';
+import registerSchema from '../../../utils/registerSchema';
+import { email } from 'zod/v4';
+import z from 'zod';
 
 const Register = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [rePassword, setRePassword] = useState('');
+  const [registerCred, setRegisterCred] = useState<registerForm>({
+    email: '',
+    password: '',
+    rePassword: '',
+  });
+
   const { signup } = useAuth();
-  const handleRegister = () => {
-    if (email && password && rePassword) {
-      if (password == rePassword) {
-        try {
-          signup(email, password);
-          navigation.navigate('Login');
-        } catch (error) {
-          console.log(error);
-        }
+  const handleRegister = async () => {
+    try {
+      registerSchema.parse({
+        email: registerCred.email,
+        password: registerCred.password,
+        rePassword: registerCred.rePassword,
+      });
+      await signup(registerCred.email, registerCred.password);
+      navigation.navigate('Login');
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        console.log(err.errors);
       }
     }
   };
@@ -24,27 +35,33 @@ const Register = ({ navigation }) => {
     <View className="flex-1 justify-center items-center gap-5">
       <Text className="text-2xl font-semibold w-80">Create Your Account</Text>
       <TextInput
-        value={email}
+        value={registerCred.email}
         placeholder="joe@mail.com"
         keyboardType="email-address"
         className="elevation-xl w-80 bg-white rounded p-5"
-        onChangeText={setEmail}
+        onChangeText={value =>
+          setRegisterCred(prev => ({ ...prev, email: value }))
+        }
       ></TextInput>
       <TextInput
-        value={password}
+        value={registerCred.password}
         placeholder="password"
         textContentType="password"
         secureTextEntry
         className="elevation-xl w-80 bg-white rounded p-5"
-        onChangeText={setPassword}
+        onChangeText={value =>
+          setRegisterCred(prev => ({ ...prev, password: value }))
+        }
       ></TextInput>
       <TextInput
-        value={rePassword}
+        value={registerCred.rePassword}
         placeholder="Confirm Password"
         textContentType="password"
         secureTextEntry
         className="elevation-xl w-80 bg-white rounded p-5"
-        onChangeText={setRePassword}
+        onChangeText={value =>
+          setRegisterCred(prev => ({ ...prev, rePassword: value }))
+        }
       ></TextInput>
       <TouchableOpacity
         onPress={handleRegister}

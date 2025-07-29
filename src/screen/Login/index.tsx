@@ -3,45 +3,58 @@ import {
   Text,
   View,
   TextInput,
-  Button,
   Touchable,
   TouchableOpacity,
 } from 'react-native';
 import { useAuth } from '../../context/AuthProvider';
+import loginSchema from '../../../utils/loginSchema';
+import { z } from 'zod';
+import Loginform from '../../../utils/loginType';
+import { email } from 'zod/v4';
 
 export default function Login({ navigation }) {
-  const [userName, setUserName] = useState('');
-  const [password, setPassword] = useState('');
+  const [loginCredential, setLoginCredential] = useState<Loginform>({
+    email: '',
+    password: '',
+  });
+
   const { login } = useAuth();
   const handleLogin = async () => {
-    if (userName && password) {
-      try {
-        console.log('userName', { userName });
-        console.log('password', { password });
-        await login(userName, password);
-        navigation.navigate('Home');
-      } catch (error) {
-        console.log(error);
+    try {
+      loginSchema.parse({
+        email: loginCredential.email,
+        password: loginCredential.password,
+      });
+      await login(loginCredential.email, loginCredential.password);
+      navigation.navigate('Home');
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        console.log(err.errors);
       }
     }
   };
+
   return (
     <View className="flex-1 justify-center items-center gap-5">
       <Text className="text-2xl font-semibold w-80">Login to your Account</Text>
       <TextInput
-        value={userName}
+        value={loginCredential.email}
         placeholder="Email"
         keyboardType="email-address"
         className="px-5 bg-white shadow-black elevation-xl shadow-md rounded w-80"
-        onChangeText={setUserName}
+        onChangeText={text =>
+          setLoginCredential(prev => ({ ...prev, email: text }))
+        }
       ></TextInput>
       <TextInput
-        value={password}
+        value={loginCredential.password}
         placeholder="Password"
         textContentType="password"
         secureTextEntry
         className="px-5 bg-white elevation-xl rounded w-80"
-        onChangeText={setPassword}
+        onChangeText={text =>
+          setLoginCredential(prev => ({ ...prev, password: text }))
+        }
       ></TextInput>
       <TouchableOpacity
         onPress={handleLogin}
