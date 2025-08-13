@@ -13,6 +13,8 @@ import Signup from './src/screen/Register';
 import { AuthProvider, useAuth } from './src/context/AuthProvider';
 import { useEffect } from 'react';
 import BootSplash from 'react-native-bootsplash';
+import { Provider } from 'react-redux';
+import store from './src/store/store';
 
 const Stack = createNativeStackNavigator();
 
@@ -50,9 +52,11 @@ const AppNavigator = () => {
 
 function App() {
   return (
-    <AuthProvider>
-      <AppNavigator />
-    </AuthProvider>
+    <Provider store={store}>
+      <AuthProvider>
+        <AppNavigator />
+      </AuthProvider>
+    </Provider>
   );
 }
 
