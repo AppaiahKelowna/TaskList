@@ -35,18 +35,29 @@ const todoSlice = createSlice({
         // add each todo item to the list:
         addTodo: (state, action) => {
             state.value = [...state.value, action.payload];
-        } 
+        },
+        // delete todo item
+        deleteTodo: (state, action) => {
+            console.log("action.payload", action.payload)
+             state.value = state.value.filter((val) => {
+                console.log("val comparision is", val)
+                const keep = val !== action.payload
+                console.log("condition flag is", val === action.payload)
+                return keep
+             })
+             console.log("after filter state.value is", state.value)
+        }
     }
     ,extraReducers: (builder) => {
     builder
-      .addCase(saveToStorage.fulfilled, (state, action) => {
-          state.value = action.payload
-      })
+    //   .addCase(saveToStorage.fulfilled, (state, action) => {
+    //       state.value = action.payload
+    //   })
       .addCase(fetchFromStorage.fulfilled, (state, action) => {
           state.value = action.payload; // replaces list
       });
 }
 })
 
-export const {addTodo} = todoSlice.actions;
+export const {addTodo, deleteTodo} = todoSlice.actions;
 export default todoSlice.reducer;

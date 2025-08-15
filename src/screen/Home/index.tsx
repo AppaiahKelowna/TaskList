@@ -9,20 +9,29 @@ import {
 } from 'react-native';
 import { useAuth } from '../../context/AuthProvider';
 import { useEffect, useState } from 'react';
-import { addTodo, saveToStorage } from '../../slice/todoSlice';
+import {
+  addTodo,
+  saveToStorage,
+  fetchFromStorage,
+  deleteTodo,
+} from '../../slice/todoSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 export default function Home({ navigation }) {
   const { logOut, user } = useAuth();
   const [inputValue, setInputValue] = useState('');
   const dispatch = useDispatch();
-  const todoList = useSelector((state: any) => state.todo);
+  const { value } = useSelector((state: any) => state.todo);
 
   useEffect(() => {
-    console.log('todoList is updated');
-    console.log(todoList);
-    dispatch(saveToStorage(todoList));
-  }, [todoList, dispatch]);
+    console.log('Loading from the Storage...');
+    dispatch(fetchFromStorage());
+  }, []);
+
+  useEffect(() => {
+    console.log('todoList is updated,', value);
+    dispatch(saveToStorage(value));
+  }, [value]);
 
   const handleLogOut = () => {
     logOut();
@@ -35,6 +44,13 @@ export default function Home({ navigation }) {
     }
   };
 
+  const handleDeleteTodo = item => {
+    console.log('Item to Delete', item);
+    dispatch(deleteTodo(item));
+  };
+  {
+    console.log('UI Rendering Phase');
+  }
   return (
     <View className="gap-10 items-center flex-1">
       <View className="flex-row justify-center items-center">
@@ -68,12 +84,15 @@ export default function Home({ navigation }) {
           </TouchableOpacity>
         </View>
         <FlatList
-          data={todoList}
+          data={value}
           className="flex-none h-100 border border-black"
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <View className="p-5  border w-50">
               <Text>{item}</Text>
+              <TouchableOpacity onPress={() => handleDeleteTodo(item)}>
+                <Text>delete</Text>
+              </TouchableOpacity>
             </View>
           )}
         ></FlatList>
